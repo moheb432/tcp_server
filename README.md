@@ -42,7 +42,6 @@ or to ask the medical bot for a simple diagnosis according to the following symp
 
 [![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/cap3.PNG)]
  
-[![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/2.PNG)](https://nodesource.com/products/nsolid)
 
 # clients Dataset
 > when client is connected the server saves his ip and port and his symptoms in a csv file 
