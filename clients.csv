@@ -1,0 +1,5 @@
+,host,symptoms
+0,"('127.0.0.1', 59004)","['headache', 'abdominal pain']"
+1,"('127.0.0.1', 59005)","[vomiting', 'diarrea']"
+2,"('127.0.0.1', 59010)","['sneezing', 'heart burn']"
+3,"('127.0.0.1', 59020)","['headache', 'abdominal pain']"
