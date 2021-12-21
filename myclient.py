@@ -5,12 +5,11 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import pickle
-
+name=[]
 
 
 target_host="127.0.0.1"
 target_port=5555
-
 THIS_FOLDER= path.dirname(path.abspath(__file__))
 DIAGNOSE_CLASS,_=loadUiType(path.join(THIS_FOLDER, "diagnose.ui"))
 MAIN_CLASS,_=loadUiType(path.join(THIS_FOLDER, "main.ui"))
@@ -22,15 +21,19 @@ class Main(QtWidgets.QMainWindow,MAIN_CLASS):
         super(Main,self).__init__(parent)
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
-
         self.diagnose.clicked.connect(lambda:self.diagnose_pushButton_clicked())
         self.chat.clicked.connect(lambda:self.chat_pushButton_clicked())
 
     def diagnose_pushButton_clicked(self):
+        
+        name.append(self.name.toPlainText())
+        
         Diagnose(self).show()
         self.close()
 
     def chat_pushButton_clicked(self):
+        name.append(self.name.toPlainText())
+       
         Chat(self).show()
         self.close()
 
@@ -41,7 +44,7 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
         self.handle_UI()
-
+        
         self.client=0
         self.payload=[]
         
@@ -83,7 +86,7 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
             client_socket=sock.socket(sock.AF_INET,sock.SOCK_STREAM)
         except sock.error as err:
             self.browser.append("FAILED to create client")
-            self.browser.append("Reason:"+str(err))
+            self.browser.append("Reason:"+str(err)) 
             sys.exit()
 
         try:
@@ -95,8 +98,8 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
             self.browser.append("FAILED to connect client")
             self.browser.append("Reason:"+str(err))
             sys.exit()
-
-        self.client.send("d".encode("utf-8")) 
+        l=['d',name[0]]    
+        self.client.send(pickle.dumps(l))
         self.browser.append("What do you feel?")
 
 
