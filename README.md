@@ -35,16 +35,25 @@ or to ask the medical bot for a simple diagnosis according to the following symp
 [![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/2.PNG)] 
 # server securing
 > the server is made using scocekt programming TCP/IP method 
+> 
 > formatting  with pickle and utf-8
+> 
 > the server is secured using try and except if the client take more than 20 sec to respond
+> 
 > the server is secured using recv(len) 
+> 
 > where if the len(data)>1024 the server will forcelly close the client connection 
 
 [![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/cap3.PNG)]
  
 
 # clients Dataset
-> when client is connected the server saves his ip and port and his symptoms in a csv file 
+> when client is connected the server saves his ip and port and his nick name as personal info  
+> 
+> it also record his symtomps and his vital signs heart rate,temp and blood pressure  
+>
 > then it can retrive this info next time he enter the server
+> 
 
-[![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/1.PNG)](https://nodesource.com/products/nsolid)
+[![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/3.PNG)](https://nodesource.com/products/nsolid)
+for more info you can visit this [video]
