@@ -112,7 +112,7 @@ def client_thread(connection,address):
      print(request)
 
      if request[0] == "d":
-          client.send(('Hello {}, I am your DocBot\n Please,choose one symptom '.format(name)).encode('utf-8'))
+          client.send(('Hello {}, I am your DocBot .. Please,choose one symptom '.format(name)).encode('utf-8'))
           while True:
                client.settimeout(20)
                request=connection.recv(1024)

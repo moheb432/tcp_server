@@ -112,49 +112,93 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         try:
             client_socket=sock.socket(sock.AF_INET,sock.SOCK_STREAM)
         except sock.error as err:
-            self.browser.append("FAILED to create client")
-            self.browser.append("Reason:"+str(err)) 
-            sys.exit()
-
+            self.browser.append("<b>FAILED to create client</b>")
+            self.browser.append("Reason:"+str(err))
+            self.fever.setEnabled(False)
+            self.headache.setEnabled(False)
+            self.diarrhea.setEnabled(False)
+            self.sneezing.setEnabled(False)
+            self.vomiting.setEnabled(False)
+            self.heartburn.setEnabled(False)
+            self.sr.setEnabled(False)
+            self.ab.setEnabled(False)
+            self.yes.setEnabled(False)
+            self.no.setEnabled(False)
         try:
             client_socket.connect((target_host,target_port))
-            self.browser.append("client is connected")
+            self.browser.append("<p style='color: green'>Connected to server</p>")
             self.client=client_socket
 
         except sock.error as err:
-            self.browser.append("FAILED to connect client")
+            self.browser.append("<b>FAILED to connect to server</b>")
             self.browser.append("Reason:"+str(err))
-            sys.exit()
+            self.fever.setEnabled(False)
+            self.headache.setEnabled(False)
+            self.diarrhea.setEnabled(False)
+            self.sneezing.setEnabled(False)
+            self.vomiting.setEnabled(False)
+            self.heartburn.setEnabled(False)
+            self.sr.setEnabled(False)
+            self.ab.setEnabled(False)
+            self.yes.setEnabled(False)
+            self.no.setEnabled(False)
 
-        l=['d',NAME,list(vitals.values())]    
-        self.client.send(pickle.dumps(l))
 
-        respond=self.client.recv(1024)
-        respond=respond.decode("utf-8")
-        self.browser.append(respond)
+        l=['d',NAME,list(vitals.values())]
+        self.client=client_socket
+
+        try:    
+            client_socket.send(pickle.dumps(l))
+            respond=client_socket.recv(1024)
+            respond=respond.decode("utf-8")
+            self.browser.append("<p style='color: green'><i>DocBot:</i> {}</p>".format(str(respond)))
+
+        except sock.error as err:
+            self.browser.append("<b>FAILED to send data</b>")
+            self.browser.append("Reason:"+str(err))
+            self.fever.setEnabled(False)
+            self.headache.setEnabled(False)
+            self.diarrhea.setEnabled(False)
+            self.sneezing.setEnabled(False)
+            self.vomiting.setEnabled(False)
+            self.heartburn.setEnabled(False)
+            self.sr.setEnabled(False)
+            self.ab.setEnabled(False)
+            self.yes.setEnabled(False)
+            self.no.setEnabled(False)
 
 
     def send(self):    
         data=pickle.dumps(self.payload)
         self.client.send(data)
 
-    def recieve(self):     
+    def recieve(self):
+           
         respond=self.client.recv(1024)
         respond=respond.decode("utf-8")
-        self.browser.append(respond)
-        self.browser.append("connection closed")
-        self.client.close()
-
-        
+        self.browser.append("<p style='color: green'>{}</p>".format(respond))
+        self.closeConnection()
     
+    def closeConnection(self):
+        self.browser.append("<b>Connection was terminated</b>")
+        self.client.close()
+        self.fever.setEnabled(False)
+        self.headache.setEnabled(False)
+        self.diarrhea.setEnabled(False)
+        self.sneezing.setEnabled(False)
+        self.vomiting.setEnabled(False)
+        self.heartburn.setEnabled(False)
+        self.sr.setEnabled(False)
+        self.ab.setEnabled(False)
+        self.yes.setEnabled(False)
+        self.no.setEnabled(False)
     def add(self,disease):
 
         if (disease in self.payload):
-            self.browser.append("you already have chosen this")
-
+            self.browser.append(" <p style='color: green'><i>DocBot</i>: <b>You already have chosen this</b></p>" )
         else:    
             self.payload.append(disease)
-            self.browser.append(disease)
+            self.browser.append("<i>Me</i>: {}".format(disease))
 
         self.fever.setEnabled(False)
         self.headache.setEnabled(False)
@@ -162,14 +206,15 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.sneezing.setEnabled(False)
         self.vomiting.setEnabled(False)
         self.heartburn.setEnabled(False)
-        self.browser.append("Anything else?")
-        self.yes.setEnabled(True)
-        self.no.setEnabled(True)
         self.sr.setEnabled(False)
         self.ab.setEnabled(False)
-        
+
+        self.browser.append("<p style='color: green'><i>DocBot</i>: Do you have other symptoms?</p>")
+        self.yes.setEnabled(True)
+        self.no.setEnabled(True)
     
     def yesClicked(self):
+        self.browser.append("<i>Me</i>: Yes")
         self.fever.setEnabled(True)
         self.headache.setEnabled(True)
         
@@ -183,6 +228,7 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.no.setEnabled(False)
 
     def noClicked(self):
+        self.browser.append("<i>Me</i>: No")
         self.yes.setEnabled(False)
         self.no.setEnabled(False)
         #self.payload.append('0')
@@ -201,7 +247,7 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
 
         self.exit.clicked.connect(lambda :self.exitClicked())
         self.chatbox.returnPressed.connect(lambda: self.sendreply())
-        self.refresh.clicked.connect(lambda: self.recieveClicked())
+        self.refresh.clicked.connect(lambda: self.recieveReply())
         self.back.clicked.connect(lambda: self.backClicked())
         self.back.hide()
 
@@ -209,17 +255,17 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
         try:
             client_socket=sock.socket(sock.AF_INET,sock.SOCK_STREAM)
         except sock.error as err:
-            self.browser.append("FAILED to create client")
+            self.browser.append("<b>FAILED to create client</b>")
             self.browser.append("Reason:"+str(err))
             sys.exit()
 
         try:
             client_socket.connect((target_host,target_port))
-            self.browser.append("client is connected")
+            self.browser.append("<p style='color: green'>Connected to server</p>")
             self.client=client_socket
 
         except sock.error as err:
-            self.browser.append("FAILED to connect client")
+            self.browser.append("<b>FAILED to connect to server</b>")
             self.browser.append("Reason:"+str(err))
             sys.exit()
         
@@ -228,12 +274,13 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
 
         respond=self.client.recv(1024)
         respond=respond.decode("utf-8")
-        self.browser.append(respond)
+        self.browser.append("<p style='color: green'>{}</p>".format(respond))
+
         
 
     def exitClicked(self):
         self.client.send("f".encode("utf-8")) 
-        self.browser.append("connection closed")
+        self.browser.append("<b>Connection was terminated</b>")
         self.client.close()
         self.exit.hide()
         self.chatbox.hide()
@@ -248,13 +295,13 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
     def sendreply(self):
         reply = self.chatbox.text()
         self.chatbox.setText('')
-        self.browser.append(reply)
         self.client.send(reply.encode("utf-8")) 
+        self.browser.append("<p style='color: red'><i>Me:</i> {}</p>".format(str(reply)))
 
-    def recieveClicked(self):
+    def recieveReply(self):
         respond=self.client.recv(1024)
         respond=respond.decode("utf-8")
-        self.browser.append(str(respond))
+        self.browser.append("<p style='color: green'><i>Doctor:</i> {}</p>".format(str(respond)))
       
 def main():
     app = QtWidgets.QApplication(sys.argv)
