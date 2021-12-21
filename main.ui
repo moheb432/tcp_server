@@ -518,7 +518,7 @@ QScrollBar::sub-page:vertical
      <string/>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="name">
     <property name="geometry">
      <rect>
       <x>210</x>
