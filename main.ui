@@ -482,7 +482,7 @@ QScrollBar::sub-page:vertical
    <widget class="QPushButton" name="diagnose">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>260</y>
       <width>261</width>
       <height>91</height>
@@ -495,7 +495,7 @@ QScrollBar::sub-page:vertical
    <widget class="QPushButton" name="chat">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>550</x>
       <y>260</y>
       <width>281</width>
       <height>101</height>
@@ -528,49 +528,45 @@ QScrollBar::sub-page:vertical
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="nameLabel">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>60</y>
-      <width>251</width>
+      <x>210</x>
+      <y>70</y>
+      <width>371</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>hello mr please enter your nickname</string>
+     <string>Please Enter Your Name then press Enter</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>887</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menunew">
-    <property name="title">
-     <string>new </string>
+   <widget class="QPushButton" name="back">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>400</y>
+      <width>181</width>
+      <height>91</height>
+     </rect>
     </property>
-    <addaction name="actionback"/>
-    <addaction name="actionsave"/>
-   </widget>
-   <widget class="QMenu" name="menuview">
-    <property name="title">
-     <string>view</string>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuabout">
-    <property name="title">
-     <string>about</string>
+   <widget class="QPushButton" name="enterName">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>110</y>
+      <width>171</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter</string>
     </property>
    </widget>
-   <addaction name="menunew"/>
-   <addaction name="menuview"/>
-   <addaction name="menuabout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionback">
@@ -581,6 +577,11 @@ QScrollBar::sub-page:vertical
   <action name="actionsave">
    <property name="text">
     <string>save</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string/>
    </property>
   </action>
  </widget>

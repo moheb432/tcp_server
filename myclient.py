@@ -5,8 +5,8 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import pickle
-name=[]
 
+vitals={'Heart Rate':"70 pbm",'Temp':"36.5",'Blood Pressure':"150/70"}
 
 target_host="127.0.0.1"
 target_port=5555
@@ -21,21 +21,48 @@ class Main(QtWidgets.QMainWindow,MAIN_CLASS):
         super(Main,self).__init__(parent)
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
+        self.nameLabel.setText("Please Enter Your Name then press Enter")
+        self.diagnose.hide()
+        self.chat.hide()
+        self.back.hide()
+        
+        self.back.clicked.connect(lambda:self.back_pushButton_clicked())
+        #self.name.returnPressed.connect(lambda: self.nameEntered())
+        self.enterName.clicked.connect(lambda: self.nameEntered())
         self.diagnose.clicked.connect(lambda:self.diagnose_pushButton_clicked())
         self.chat.clicked.connect(lambda:self.chat_pushButton_clicked())
 
+    def nameEntered(self):
+        
+        if not (self.name.toPlainText()).strip():
+            self.nameLabel.setText("No Name entered, Please Enter Your Name then press Enter")
+            self.nameLabel.adjustSize()
+        else:
+            global NAME
+            NAME =(self.name.toPlainText()).strip()
+            self.nameLabel.setText("Hello {}, what do you want to do?".format(NAME))
+            self.nameLabel.adjustSize()
+            self.name.hide()
+            self.enterName.hide()
+            self.diagnose.show()
+            self.chat.show()
+            self.back.show()
     def diagnose_pushButton_clicked(self):
-        
-        name.append(self.name.toPlainText())
-        
         Diagnose(self).show()
         self.close()
 
-    def chat_pushButton_clicked(self):
-        name.append(self.name.toPlainText())
-       
+    def chat_pushButton_clicked(self):       
         Chat(self).show()
         self.close()
+
+    def back_pushButton_clicked(self):
+        self.name.show()
+        self.nameLabel.setText("Please Enter Your Name then press Enter")
+        self.enterName.show()
+        self.diagnose.hide()
+        self.nameLabel.show()
+        self.chat.hide()
+        self.back.hide()
 
 
 class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
@@ -98,9 +125,13 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
             self.browser.append("FAILED to connect client")
             self.browser.append("Reason:"+str(err))
             sys.exit()
-        l=['d',name[0]]    
+
+        l=['d',NAME,list(vitals.values())]    
         self.client.send(pickle.dumps(l))
-        self.browser.append("What do you feel?")
+
+        respond=self.client.recv(1024)
+        respond=respond.decode("utf-8")
+        self.browser.append(respond)
 
 
     def send(self):    
@@ -192,10 +223,13 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
             self.browser.append("Reason:"+str(err))
             sys.exit()
         
-        self.client.send("c".encode("utf-8")) 
+        l=['c',NAME,list(vitals.values())]    
+        self.client.send(pickle.dumps(l))
+
         respond=self.client.recv(1024)
         respond=respond.decode("utf-8")
-        self.browser.append(str(respond))
+        self.browser.append(respond)
+        
 
     def exitClicked(self):
         self.client.send("f".encode("utf-8")) 
