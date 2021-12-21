@@ -3,9 +3,12 @@ import sys
 from _thread import *
 import pickle
 import pandas as pd
+import csv
 
 symptoms=['fever','diarrhea','heartburn','breathing difficulty',
           'vomiting','sneezing', 'abdominal pain', 'headache', 'skin rash']
+df= pd.DataFrame(columns = ['name','host', 'symptoms','heart rate',
+                            "temp","blood pressure"])
 
 
 try:
@@ -28,6 +31,7 @@ except sock.error as err:
     print("FAILED to bind server")
     print("Reason:"+str(err))
     sys.exit()
+
 
 def diagnose(s):
     if len(s) == len(symptoms):
@@ -74,6 +78,7 @@ def diagnose(s):
              client.send('Diagnosis not found'.encode('utf-8'))
 
 
+
 def client_thread(connection,address,df):
     """"client thread 
     is function take 3 args 
@@ -83,12 +88,14 @@ def client_thread(connection,address,df):
     this function just get response(symptoms) form the client
     and add them into a list to send them to diagnose function
     """
+    
     suffer=[]
-    client.settimeout(20)
     request=connection.recv(1024)
-    client.settimeout(None)
-    request=request.decode("utf-8")
-    if request == "d":
+    request=pickle.loads(request)
+    name=request[1]
+    print(request)
+    vital_signs=["heart rate =65 ","temp=35" ,"blood_pressure=180/60"]
+    if request[0] == "d":
         while True:
             client.settimeout(20)
             request=connection.recv(1024)
@@ -96,14 +103,20 @@ def client_thread(connection,address,df):
             suffer=pickle.loads(request)
             add=[str(address)]
             suff=[str(suffer)]            
-            l=pd.DataFrame(list(zip(add,suff)),columns=['host','symptoms'])
+            l=pd.DataFrame(list(zip([name],add,suff,[vital_signs[0]],
+                                    [vital_signs[1]],[vital_signs[2]])),
+                           columns=['name','host','symptoms','heart rate',
+                                    "temp","blood pressure"])
             df=df.append(l)
             print(df) 
+            with open(r'clients.csv', 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow(df)
             diagnose(suffer)
             
             break
         
-    elif request =="c":
+    elif request[0] =="c":
         client.send('you are now talking with real Doctor say hi'.encode('utf-8'))
         while True:
             client.settimeout(20)
@@ -118,21 +131,20 @@ def client_thread(connection,address,df):
                 reply=str(input())
                 reply=reply.encode('utf-8')
                 client.send(reply)
-
-    df.to_csv(r"C:\Users\lenovo\Desktop\New folder\clients.csv")
+    
+        # df.to_csv(r"C:\Users\lenovo\Desktop\tcp_serverclients.csv")
     print("connection of this client is closed")
     connection.close()
     
 server.listen(5)
-
-df= pd.DataFrame(columns = ['host', 'symptoms' ])
 while True:
     
     client,addr=server.accept()
-    print("client connected from",addr)
-    start_new_thread(client_thread,(client,addr,df))
     ThreadCount+=1
-    print(ThreadCount)
+    print("client connected from\n",addr)
+    start_new_thread(client_thread,(client,addr,df))
+    
+    print(f"the total no of client in server :: {ThreadCount}")
 
 
 
