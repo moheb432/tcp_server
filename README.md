@@ -56,4 +56,4 @@ or to ask the medical bot for a simple diagnosis according to the following symp
 > 
 
 [![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/3.PNG)](https://nodesource.com/products/nsolid)
-for more info you can visit this [video]
+for more info you can visit this [video](https://link-url-here.org)
