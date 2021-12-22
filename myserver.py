@@ -98,7 +98,9 @@ def client_thread(connection,address):
      """
 
      suffer=[]
-     request=connection.recv(1024)
+     client.settimeout(20)
+     request=connection.recv(4098)
+     client.settimeout(None)
      request=pickle.loads(request)
      name=request[1]
 
@@ -115,34 +117,42 @@ def client_thread(connection,address):
           client.send(('Hello {}, I am your DocBot .. Please,choose one symptom '.format(name)).encode('utf-8'))
           while True:
                client.settimeout(20)
-               request=connection.recv(1024)
+               request=connection.recv(4098)
                client.settimeout(None)
-               suffer=pickle.loads(request)
-               suff=[str(suffer)] 
+               request=request.decode("utf-8")
+               print(request)
+               suffers_to_print=[]
+               for s in suffer:
+                    suffers_to_print.append("{}-{} ".format(suffer.index(s)+1,s))
+
+               if request=='n':
+                    data={'Name':name,'Address':add,"Date":date,"Time":time,'Symptoms':' '.join(map(str,suffers_to_print)),'Heart Rate':vitals[0],'Temp':vitals[1],'Blood Pressure':vitals[2]}
+
+                    try:
+                         with open((path.join(THIS_FOLDER, "clients.csv")), 'a') as f:
+
+                              dictwriter_object = DictWriter(f, fieldnames=field_names)
+                              dictwriter_object.writerow(data)
+                    except:
+                         print("There's a problem with saving the data, kindly try close the csv file if opened and check the field names")
+
+                    diagnose(suffer)
+
+                    break
+               else:        
+                    suffer.append(request)
+                    client.send('Do you have other symptoms?'.encode('utf-8'))
                
-               data={'Name':name,'Address':add,"Date":date,"Time":time,'Symptoms':suff,'Heart Rate':vitals[0],'Temp':vitals[1],'Blood Pressure':vitals[2]}
-
-               #df=df.append(l)
-               print(data)
-
-               try:
-                    with open((path.join(THIS_FOLDER, "clients.csv")), 'a') as f:
-
-                         dictwriter_object = DictWriter(f, fieldnames=field_names)
-                         dictwriter_object.writerow(data)
-               except:
-                    print("There's a problem with saving the data, kindly try close the csv file if opened and check the field names")
-
-               diagnose(suffer)
-
-               break
+               
+               
         
      elif request[0] =="c":
           client.send(('Hello {},you are now talking with real Doctor, say hi'.format(name)).encode('utf-8'))
           while True:
                client.settimeout(20)
-               request=connection.recv(1024)
+               request=connection.recv(4098)
                client.settimeout(None)
+               
                request=request.decode("utf-8")
                if request=="f":
                     print("chat is closed")

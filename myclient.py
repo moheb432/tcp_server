@@ -5,6 +5,7 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import pickle
+from _thread import *
 
 vitals={'Heart Rate':"70 pbm",'Temp':"36.5",'Blood Pressure':"150/70"}
 
@@ -104,10 +105,10 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.sr.clicked.connect(lambda :self.add("sneezing"))
         self.ab.clicked.connect(lambda :self.add("abdominal pain"))
         
+        self.back.clicked.connect(lambda: self.backClicked())
+        self.back.hide()
         #self.showDiagnose.clicked.connect(lambda :self.send())
 
-        
-        
     def start(self):
         try:
             client_socket=sock.socket(sock.AF_INET,sock.SOCK_STREAM)
@@ -143,13 +144,12 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
             self.yes.setEnabled(False)
             self.no.setEnabled(False)
 
-
         l=['d',NAME,list(vitals.values())]
         self.client=client_socket
 
         try:    
             client_socket.send(pickle.dumps(l))
-            respond=client_socket.recv(1024)
+            respond=client_socket.recv(2048)
             respond=respond.decode("utf-8")
             self.browser.append("<p style='color: green'><i>DocBot:</i> {}</p>".format(str(respond)))
 
@@ -168,20 +168,31 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
             self.no.setEnabled(False)
 
 
-    def send(self):    
-        data=pickle.dumps(self.payload)
-        self.client.send(data)
+    def send(self,data):    
+        data=data.encode("utf-8")
+        
+        try:
+            self.client.send(data)
+            self.recieve()
+
+        except:
+            self.closeConnection()
+            self.browser.append("<b>FAILED to send</b>")
+
+
 
     def recieve(self):
-           
-        respond=self.client.recv(1024)
-        respond=respond.decode("utf-8")
-        self.browser.append("<p style='color: green'>{}</p>".format(respond))
-        self.closeConnection()
+        
+        try:
+            respond=self.client.recv(2048)
+            respond=respond.decode("utf-8")
+            self.browser.append("<p style='color: green'><i>DocBot</i>:{}</p>".format(respond))
+        except:
+            self.closeConnection()
+            self.browser.append("<b>FAILED to send</b>")
     
     def closeConnection(self):
         self.browser.append("<b>Connection was terminated</b>")
-        self.client.close()
         self.fever.setEnabled(False)
         self.headache.setEnabled(False)
         self.diarrhea.setEnabled(False)
@@ -192,6 +203,11 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.ab.setEnabled(False)
         self.yes.setEnabled(False)
         self.no.setEnabled(False)
+        self.client.close()
+        self.back.show()
+
+
+
     def add(self,disease):
 
         if (disease in self.payload):
@@ -199,6 +215,7 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         else:    
             self.payload.append(disease)
             self.browser.append("<i>Me</i>: {}".format(disease))
+            self.send(disease)
 
         self.fever.setEnabled(False)
         self.headache.setEnabled(False)
@@ -209,7 +226,6 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.sr.setEnabled(False)
         self.ab.setEnabled(False)
 
-        self.browser.append("<p style='color: green'><i>DocBot</i>: Do you have other symptoms?</p>")
         self.yes.setEnabled(True)
         self.no.setEnabled(True)
     
@@ -232,10 +248,12 @@ class Diagnose(QtWidgets.QMainWindow,DIAGNOSE_CLASS):
         self.yes.setEnabled(False)
         self.no.setEnabled(False)
         #self.payload.append('0')
-        self.send()
-        self.recieve()
-        
+        self.send("n")
+        self.closeConnection()
 
+    def backClicked(self):
+        Main(self).show()
+        self.close()
 
 
 class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
@@ -272,7 +290,7 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
         l=['c',NAME,list(vitals.values())]    
         self.client.send(pickle.dumps(l))
 
-        respond=self.client.recv(1024)
+        respond=self.client.recv(2048)
         respond=respond.decode("utf-8")
         self.browser.append("<p style='color: green'>{}</p>".format(respond))
 
@@ -299,7 +317,7 @@ class Chat(QtWidgets.QMainWindow,CHAT_CLASS):
         self.browser.append("<p style='color: red'><i>Me:</i> {}</p>".format(str(reply)))
 
     def recieveReply(self):
-        respond=self.client.recv(1024)
+        respond=self.client.recv(2048)
         respond=respond.decode("utf-8")
         self.browser.append("<p style='color: green'><i>Doctor:</i> {}</p>".format(str(respond)))
       
@@ -342,6 +360,6 @@ if __name__ == '__main__':
 #                 elif more.lower() == 'n':
 #                     payload="n"
 #                     client.send(payload.encode("utf-8"))
-#                     respond=client.recv(1024)
+#                     respond=client.recv(2048)
 #                     print(str(respond))
 #                     break
