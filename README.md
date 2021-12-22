@@ -17,10 +17,13 @@ with a socket programming using libraries :
 - thread
 - socket
 ## server      
-the client fristly write his name then he  can choose between chatting with doctor 
-![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/cap1.PNG)
-
-or to ask the medical bot for a simple diagnosis according to the following symptoms
+> the client fristly write his name then he  can choose between chatting with doctor 
+> 
+> accoriding to the symptoms the bot can tell the patient about his symtopms and 
+> 
+> recommend a drug for him
+> 
+> or to ask the medical bot for a simple diagnosis according to the following symptoms
 - fever
 - diarrhea
 - heartburn
@@ -29,10 +32,11 @@ or to ask the medical bot for a simple diagnosis according to the following symp
 - sneezing
 - skin rash
 - abdominal pain
-- accoriding to the symptoms the bot can tell the patient about his symtopms and 
- recommend a drug for him
 
-[![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/2.PNG)] 
+![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/4.PNG)
+![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/5.PNG)
+![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/6.PNG)
+![N|Solid](https://github.com/moheb432/tcp_server/blob/main/capture/7.PNG)
 # server securing
 > the server is made using scocekt programming TCP/IP method 
 > 
