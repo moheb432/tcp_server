@@ -120,7 +120,6 @@ def client_thread(connection,address):
                request=connection.recv(4098)
                client.settimeout(None)
                request=request.decode("utf-8")
-               print(request)
                suffers_to_print=[]
                for s in suffer:
                     suffers_to_print.append("{}-{} ".format(suffer.index(s)+1,s))
